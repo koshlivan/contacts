@@ -1,6 +1,4 @@
-body{
-    background-color: gray;
-}
+
 .wrapper {
     max-width: 100%;
 }
@@ -88,4 +86,10 @@ body{
 .under-hat {
     border: solid 3px white;
     margin: 3px 0;
+}
+
+.holder {
+    max-width: 90%;
+    margin: 3rem auto;
+    border: solid 2px black;
 }

@@ -36,6 +36,8 @@
             <hr class="under-hat">
         </div>
 
+        <x-holder></x-holder>
+
     </div>
 
 
