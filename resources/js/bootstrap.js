@@ -3,7 +3,7 @@ window._ = require('lodash');
 try {
     require('bootstrap');
 } catch (e) {}
-
+window.$ = require('jquery');
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the

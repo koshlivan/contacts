@@ -3,7 +3,7 @@
     max-width: 100%;
 }
 
-.hat {
+#hat {
     background-color: #f66d06;
     color: white;
     display: flex;
@@ -86,10 +86,151 @@
 .under-hat {
     border: solid 3px white;
     margin: 3px 0;
+    opacity: 100%;
 }
 
 .holder {
     max-width: 90%;
     margin: 3rem auto;
     border: solid 2px black;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
 }
+
+.holder h3{
+    margin-left: 1rem;
+    line-height: 3rem;
+    vertical-align: middle;
+}
+.cap{
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    border-top:solid 1px gray;
+    border-bottom:solid 1px gray;
+}
+
+#addContact {
+    background-color: #0a53be;
+    color: white;
+    border: solid 2px black;
+    margin-right: 1rem;
+    margin-top: 1rem;
+}
+
+.field {
+    min-width: 100%;
+    min-height: 100vh;
+    background-color: dimgray;
+    opacity: 75%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+.card {
+    min-width: 30%;
+    max-width: 40%;
+    height: 18rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 5px rgba(10, 10, 10, 0.8);
+    position: absolute;
+    top: 50%;
+    left:  50%;
+    transform: translate(-50%, -50%);
+}
+.edit-form {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: stretch;
+}
+.edit-form div:nth-child(2n+1){
+    min-height: 20%;
+}
+.edit-form div:nth-child(2n){
+    min-height: 60%;
+}
+
+.head{
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    margin-top: 1rem;
+}
+.head h2 {
+    margin: 1rem;
+}
+.head img{
+    max-height: 80%;
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
+    transition: 300ms;
+}
+.head img:hover{
+    max-height: 85%;
+    cursor: pointer;
+    box-shadow: 0 0 3px gray;
+}
+.head img:active{
+    max-height: 85%;
+    cursor: pointer;
+    box-shadow: 0 0 5px red;
+}
+
+.inputs {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+}
+
+.vert {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    max-width: 60%;
+}
+.vert label {
+    padding-right: 2rem;
+}
+.vert input {
+    border: solid 2px black;
+}
+
+.foto{
+    display: flex;
+    max-width: 40%;
+    justify-content: center;
+    align-items: center;
+}
+
+.foto img{
+    max-height: 95%;
+    max-width: 95%;
+}
+
+.finish {
+    display: flex;
+    justify-content: flex-end;
+    align-items: stretch;
+    margin: 1rem 0;
+}
+
+.finish button{
+    max-height: 2.5rem;
+}
+
+.finish button:nth-child(2n+1){
+    background-color: #383737;
+    color: white;
+}
+.finish button:nth-child(2n){
+    background-color: #0a53be;
+    color: white;
+    margin-right: 4rem;
+    margin-left: 1rem;
+}
+
