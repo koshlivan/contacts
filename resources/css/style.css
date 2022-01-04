@@ -20,6 +20,7 @@
     text-transform: capitalize;
     line-height: 4rem;
     padding-left: 2rem;
+    text-transform: capitalize;
 }
 #myDropdown {
     min-height: 2rem;
@@ -29,7 +30,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-   background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.5);
     text-align: center;
     text-transform: capitalize;
     cursor: pointer;
@@ -85,8 +86,8 @@
 }
 .under-hat {
     border: solid 3px white;
-    margin: 3px 0;
-    opacity: 100%;
+    margin: 3px;
+    opacity: 90%;
 }
 
 .holder {
@@ -111,34 +112,43 @@
     border-top:solid 1px gray;
     border-bottom:solid 1px gray;
 }
-
+.cap h3{
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
 #addContact {
     background-color: #0a53be;
     color: white;
     border: solid 2px black;
     margin-right: 1rem;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.7rem;
 }
 
-.field {
+#field {
     min-width: 100%;
     min-height: 100vh;
-    background-color: dimgray;
-    opacity: 75%;
-    display: flex;
+    background-color: rgba(105, 105, 105, 0.7);
+    display: none;
     justify-content: center;
     align-content: center;
+    z-index: 4;
+    position: absolute;
+    top: 0;
+
 }
 .card {
     min-width: 30%;
     max-width: 40%;
-    height: 18rem;
+    height: 20rem;
     border-radius: 1rem;
     box-shadow: 0 0 5px rgba(10, 10, 10, 0.8);
     position: absolute;
     top: 50%;
     left:  50%;
     transform: translate(-50%, -50%);
+    opacity: 100%;
 }
 .edit-form {
     display: flex;
@@ -146,6 +156,7 @@
     flex-direction: column;
     justify-content: space-around;
     align-items: stretch;
+    opacity: 100%;
 }
 .edit-form div:nth-child(2n+1){
     min-height: 20%;
@@ -178,6 +189,15 @@
     max-height: 85%;
     cursor: pointer;
     box-shadow: 0 0 5px red;
+}
+.close-butt{
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
+    transition: 300ms;
+}
+.close-butt span:hover{
+    cursor: pointer;
+    box-shadow: 0 0 3px gray;
 }
 
 .inputs {
@@ -233,4 +253,77 @@
     margin-right: 4rem;
     margin-left: 1rem;
 }
+table{
+    width: 100%;
+}
+table tr {
+    background-color: rgba(173, 173, 173, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    min-height: 3rem;
 
+}
+th{
+    min-height: 2rem;
+    margin: 0.5rem auto;
+    min-width: 14%;
+    padding-left: 1rem;
+}
+.cell{
+    margin: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    min-height: 3rem;
+    max-height: 4rem;
+    text-align-all: left;
+    padding-left: 1rem;
+
+}
+.cell img{
+    max-height: 3rem;
+    max-width: 4rem;
+}
+.cell h6{
+    text-align: left;
+    text-transform: capitalize;
+    vertical-align: center;
+    line-height: 3rem;
+}
+.cell>div{
+    min-width: 14%;
+}
+.line:hover{
+    background-color: rgba(173,82,14,0.24);
+
+}
+#options{
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    border: solid 2px black;
+    min-width: 8rem;
+    max-height: 4rem;
+    z-index: 2;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: white;
+    opacity: 100%;
+}
+#options h6{
+    box-sizing: border-box;
+    margin: 0;
+
+    line-height: 1.5rem;
+    border-bottom: solid 2px black;
+}
+#options h6:hover{
+    background-color: rgba(173,82,14,0.24);
+    cursor: pointer;
+}
+#ellips:hover{
+    cursor: pointer;
+}

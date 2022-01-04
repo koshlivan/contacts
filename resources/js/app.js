@@ -9,7 +9,9 @@ global.jquery = global.jQuery = global.$ = require('jquery');
 
 window.Vue = require('vue').default;
 var VueRouter = require('vue-router');
-
+import App from './components/app.vue'
+import Hat from './components/hat.vue'
+import Stripe from './components/stripe.vue'
 Vue.use(VueRouter);
 /**
  * The following block of code may be used to automatically register your
@@ -19,8 +21,7 @@ Vue.use(VueRouter);
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
-// const files = require.context('./', true, /\.vue$/i)
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+
 import cell from './components/celly';
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('keeper', require('./components/keeper.vue').default);
@@ -40,22 +41,26 @@ const Edit = require('./components/edit');
 
 const app = new Vue({
     el: '#app',
-    data:{
+    data(){return{
         users: [
-            {number: '1'},
-            {number: '2'},
-            {number: '3'},
-            {number: '4'},
-            {number: '5'},
-        ]
+            {number: '1', name: 'bob', email: 'bob@mail.ru', address: 'London', created: '12.12.20', photopath: './assets/unnamed.jpg'},
+            {number: '2', name: 'bill', email: 'bill@mail.ru', address: 'Paris', created: '23.12.19', photopath: './assets/index.jpeg'},
+            {number: '3', name: 'john', email: 'john@mail.ru', address: 'Berlin', created: '09.08.21', photopath: './assets/index.jpeg'},
+            {number: '4', name: 'Sean', email: 'sean@mail.ru', address: 'Rome', created: '32.10.21', photopath: './assets/unnamed.jpg'},
+            {number: '5', name: 'Harry', email: 'harry@mail.ru', address: 'Madrid', created: '09.11.21', photopath: './assets/prof.jpg'},
+            {number: '6', name: 'Chuck', email: 'chuck@mail.ru', address: 'Madrid', created: '09.11.21', photopath: './assets/index.jpeg'},
+            {number: '7', name: 'Bruice', email: 'bruice@mail.ru', address: 'Madrid', created: '09.11.21', photopath: './assets/prof.jpg'},
+        ]}
     },
-    components: {
-        keeper,
-        hat,
-        holder,
-        celly,
-        edit,
-        tblHead,
+    components:{
+        App,
+        Hat,
+        Stripe
+    },
+    computed:{
+        currentDate(){
+            return new Date().getDay()+'.'+ new Date().getMonth()+1+'.'+ new Date().getFullYear()
+        }
     }
 });
 // const routes = [
@@ -81,11 +86,11 @@ function myFunction() {
 //$('#close').click(function(){$('.field').css("display", "none")});
 // function closeClick (){console.log('pressed');}
 // $('#close').click(function(){console.log('pressed')});
-const Applicat={
-    data(){
-        return{
-            date: '2021-12-30'
-        }
-    }
-}
-Vue.createApp(Applicat).mount('#app')
+// const Applicat={
+//     data(){
+//         return{
+//             date: '2021-12-30'
+//         }
+//     }
+// }
+// Vue.createApp(Applicat).mount('#app')

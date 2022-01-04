@@ -13,10 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('app');
-})->name('home');
+//Route::get('/{any}', function () {
+//    return view('app');
+//})->name('home');
 
-Route::get('/edit', function () {
-    return view('edit');
-})->name('edit');
+Route::get('/{any}', 'App\Http\Controllers\PagesController@index')->where('any', '.*');
