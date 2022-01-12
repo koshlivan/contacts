@@ -15,12 +15,18 @@ class UserResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'=>$this->id,
+            'id' => $this->id,
             'name'=>$this->name,
             'email'=>$this->email,
             'address'=>$this->address,
-            'created'=>$this->created,
+            'created'=>$this->created_at,
             'photo'=>$this->photo,
         ];
     }
+    /**
+     * Обертка «данных», которую следует применить.
+     *
+     * @var string
+     */
+    public static $wrap = 'user';
 }
