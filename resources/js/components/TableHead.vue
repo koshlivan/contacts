@@ -48,16 +48,16 @@
       </th>
       <th class="sortable"
           title="Sort by Date"
-          @click="sort('created')">
+          @click="sort('created_at')">
         <div>
           <h5 class="col-name">Created</h5>
         </div>
         <div class="arrows">
           <span class="material-icons"
-                :class="{'arrow-active': isArrowLight('created', -1)}"
+                :class="{'arrow-active': isArrowLight('created_at', -1)}"
                 >arrow_drop_up</span>
           <span class="material-icons"
-                :class="{'arrow-active': isArrowLight('created', 1)}"
+                :class="{'arrow-active': isArrowLight('created_at', 1)}"
                 >arrow_drop_down</span>
         </div>
       </th>
@@ -67,7 +67,7 @@
 </template>
 
 <script>
-//@change="$emit('setAllChecked')"
+
 export default {
   name: "TableHead",
   props: {
@@ -103,24 +103,28 @@ export default {
   methods: {
 
     /*sort by key and order*/
-    sortBy(key, order) {
-      return this.users.sort((a, b) => a[key] < b[key] ? -(order) : ((a[key] > b[key]) ? order : 0));
+    sortBy( key, order ) {
+        axios.get('/api/users/?sorting='+key+'&sortOrder='+order)
+        // axios.get('/api/users/', {
+        //         sorting : key,
+        //         sortOrder : order
+        // })
+        .then( response => {
+            for(let i=0; i<this.users.length; i++){
+                this.users[i] = response.data.data[i];
+            }
+
+        } );
     },
 
     /*sort by pressing column name*/
     sort(data) {
       this.sorting=data;
-      console.log(this.users[0].name);
+      //this.sortBy(this.sorting, this.sortingVector);
 
-        if ( isNaN( Date.parse(this.users[0][this.sorting]) ) ) {
-          this.sortBy(this.sorting, this.sortingVector);
+      (this.sortingVector > 0) ? this.sortingVector = -1 : this.sortingVector = 1;
 
-          (this.sortingVector > 0)? this.sortingVector = -1 : this.sortingVector = 1;
-        } else {
-          this.sortCreated(this.sortingVector);
-
-          (this.sortingVector > 0)? this.sortingVector = -1 : this.sortingVector = 1;
-        }
+      this.emitSort();
     },
 
     /*which arrow will light*/
@@ -131,41 +135,14 @@ export default {
       return false;
     },
 
-    /*sort by created date asc and desc*/
-    // sortCreated(order) {
-    //   return this.users.sort( function (a, b) {
-    //     let dateOne = Date.parse( a['created'] );
-    //     let dateTwo = Date.parse( b['created'] );
-    //
-    //     if (dateTwo > dateOne) {
-    //       return -(order);
-    //     }
-    //     if ( dateTwo < dateOne) {
-    //       return order;
-    //     }
-    //
-    //     return 0;
-    //   } )
-    // },
-      sortCreated(order) {
-          return this.users.sort( function (a, b) {
-              let dateOne = Date.parse( a['created'] );
-              let dateTwo = Date.parse( b['created'] );
-
-              if (dateTwo > dateOne) {
-                  return -(order);
-              }
-              if ( dateTwo < dateOne) {
-                  return order;
-              }
-
-              return 0;
-          } )
-      },
-
     /*on sort has been done*/
     emitSort() {
-      this.$emit('sortDone', this.users);
+        console.log(this.users[0].name);
+      //this.$emit('sortDone', this.users);
+      this.$emit('sortDone', {
+          sorting: this.sorting,
+          sortOrder: this.sortingVector
+      });
     }
   }
 }

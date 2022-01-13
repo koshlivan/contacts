@@ -7,25 +7,42 @@ use App\Http\Requests\UserStoreRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return UserResource::collection(User::all());
+        //$forSorting=json_decode($request);
+        if ( isset( $request -> sorting ) ) {
+            $users = [];
+            $sortingOrder=(int)$request -> sortOrder;
+            if ( $sortingOrder === -1 ) {
+            $users = User::all() -> sortBy( $request -> sorting );
+            //return 'sort asc '. $request;
+            }
+            if ( $sortingOrder === 1 ) {
+                $users = User::all() -> sortByDesc( $request -> sorting );
+                //return 'sort desc '. $request;
+            }
+            //return 'order missing';
+           return UserResource::collection( $users );
+        }
+        //return 'request empty';
+       return UserResource::collection( User::all() );
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return UserResource
      */
     public function store(Request $request)
     {
@@ -39,7 +56,7 @@ class UserController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return UserResource
      */
     public function show($id)
     {
@@ -51,7 +68,7 @@ class UserController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return UserResource
      */
     public function update(Request $request, $id)
     {
@@ -75,7 +92,7 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {

@@ -12,9 +12,11 @@
           <div class="line">
             <Loading v-show="loading"></Loading>
             <user-row v-for="(user, index) in users"
-                  :key="user.number"
+                  :key="user.id"
                   ref="lineComponent"
-                  :is-checked="isAllChecked"
+                  :is-all-checked="isAllChecked"
+                  :is-one-checked="isOneChecked"
+                  :selected-rows="selectedLines"
                   @deleteOne="deleteOne(index)"
                   @showFilledModal="showFilledModal(index)"
                   :is-pop-up="isPopUp"
@@ -33,9 +35,11 @@
          :modelName="nameToSend"
          :modelEmail="emailToSend"
          :modelAddress="addressToSend"
+         :is-modal-empty="isModalEmpty"
          @update:modelName="nameToSend=$event"
          @update:modelEmail="emailToSend=$event"
          @update:modelAddress="addressToSend=$event"
+         @update:modelPhoto="photopathToSend=$event"
          :take-name="nameToSend"
          :take-email="emailToSend"
          :take-address="addressToSend"
@@ -74,7 +78,9 @@ export default {
       addressToSend :'',
       photopathToSend :'',
       isAllChecked : false,
+      isOneChecked: false,
       isShowModal : false,
+      isModalEmpty: false,
       item : -1,
       isExisted : false,
       sender : -1,
@@ -104,7 +110,7 @@ export default {
     thisDate: function() {
       return new Date().getFullYear()+'-'+new Date().getMonth()+'-'+new Date().getDate();
     },
-
+    isChecked : function() { return this.isAllChecked && this.isOneChecked; }
   },
 
   mounted() {
@@ -128,17 +134,14 @@ export default {
       if ($event === true) {
         this.isAllChecked = true;
         this.selectedLines = [];
-        console.log(this.users.length);
 
         for (let i = 0; i < this.users.length; i++) {
           this.selectedLines.push( i );
         }
-          console.log(this.selectedLines);
       }
       if ($event === false) {
         this.selectedLines = [];
         this.isAllChecked = false;
-          console.log(this.selectedLines);
       }
     },
 
@@ -153,12 +156,14 @@ export default {
         this.selectedLines.splice(needIndex, 1);
           console.log('was removeded', this.selectedLines);
       }
+      console.log(this.isAllChecked);
     },
 
     /*empty modal window for adding a new user*/
     showModal(index) {
       if (index<0) {
         this.emptyUser();
+        this.isModalEmpty=true;
         this.isShowModal = true;
       }
     },
@@ -166,6 +171,7 @@ export default {
     /*close modal*/
     modalClose() {
       this.isShowModal = false;
+      this.isModalEmpty=false;
       this.isPopUp = false;
       this.emptyUser();
     },
@@ -183,6 +189,7 @@ export default {
 
     /*opens modal window with filled inputs with information of user*/
     showFilledModal(index) {
+      this.isModalEmpty=false;
       this.isExisted = true;
       this.sender = this.users[index].id;
       this.senderIndex = index;
@@ -191,7 +198,6 @@ export default {
       this.addressToSend = this.users[index].address;
       this.photopathToSend = this.users[index].photo;
       this.isShowModal = true;
-      console.log(this.isExisted, this.sender, this.senderIndex, this.nameToSend, this.emailToSend, this.addressToSend, this.photopathToSend);
     },
 
     /*save user from modal window*/
@@ -211,6 +217,7 @@ export default {
           } else {
           this.saveNewUser(newUser);
           }
+      console.log(this.photopathToSend);
       this.modalClose();
     },
 
@@ -266,7 +273,7 @@ export default {
     deleteOne(index, singleDelete=true) {
         let id=this.users[index].id;
         axios.delete ('/api/users/' + id)
-            .then (response => {
+            .then (() => {
                 if (singleDelete) {
                     this.users.splice(index, 1);
                 }
@@ -278,18 +285,33 @@ export default {
     remove() {
       for (let i=0, k=0; i < this.selectedLines.length; i++, k++) {
         let deleted = Number.parseInt(this.selectedLines[i])-k;
-        console.log(deleted, this.selectedLines);
 
         this.deleteOne(deleted, false);
           this.users.splice(deleted, 1);
       }
-      this.selectedLines = [];
-      this.isAllChecked=false;
-      console.log(this.isAllChecked);
+      this.allChecked(false);
+      this.isOneChecked=false;
+      console.log(this.isAllChecked+' '+this.isChecked);
     },
 
     makeSort($event) {
-      this.users = $event;
+      //this.users = $event;
+        console.log($event.sorting+$event.sortOrder+'it is event allready. next will be request');
+        axios.get('/api/users/?sorting='+ $event.sorting +'&sortOrder='+ $event.sortOrder)
+        // axios.get('/api/users/', {
+        //         headers: {
+        //           Accept: 'application/x-www-form-urlencoded'
+        //         },
+        //         sorting : $event.sorting,
+        //         sortOrder : $event.sortOrder
+        //      })
+            .then( response => {
+                for(let i=0; i<this.users.length; i++)
+                {
+                    this.users[i] = response.data.data[i];
+                }
+                this.users = response.data.data;
+            } );
     },
   }
 }

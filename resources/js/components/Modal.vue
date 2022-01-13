@@ -34,8 +34,9 @@
             </div>
           </div>
           <div class="foto">
-            <img :src="photoPresence" alt="&#9587;">
-
+            <img :src="photoPresence" alt="&#9587;" :class="{'foto-shrinked': isEmptyModal}">
+<!--              <file-input v-model="YourModel" v-show="isEmptyModal"></file-input>-->
+<!--              <input type="file" v-show="isEmptyModal" @change="onFileChange">-->
           </div>
         </div>
         <div class="finish">
@@ -49,6 +50,7 @@
 </template>
 
 <script>
+//import FileInput from 'vue3-simple-file-input'
 export default {
   name: "Modal",
 
@@ -59,13 +61,15 @@ export default {
       'takeName',
       'takeAddress',
       'takeEmail',
-      'takePhotopath'
+      'takePhotopath',
+      'isModalEmpty'
   ],
 
   emits: [
       'update:modelName',
       'update:modelEmail',
       'update:modelAddress',
+      'update:modelPhoto',
     'submitted',
     'modal-close'
   ],
@@ -79,10 +83,27 @@ export default {
         photo: this.photo,
       });
     },
+      onFileChange(e){
+          var files = e.target.files || e.dataTransfer.files;
+          if (!files.length) {
+              return;
+          }
+          this.createImage(files[0]);
+      },
+      createImage(file) {
+          var image = new Image();
+          var reader = new FileReader();
+          var vm = this;
+
+          reader.onload = (e) => {
+              vm.image = e.target.result;
+          };
+          reader.readAsDataURL(file);
+      },
   },
 
-  computed:{
-      name: {
+  computed : {
+      name : {
         get(){
           return this.takeName
         },
@@ -90,7 +111,7 @@ export default {
           this.$emit('update:modelName', newValue)
         }
       },
-    email:{
+    email : {
         get(){
           return this.takeEmail
         },
@@ -98,13 +119,25 @@ export default {
           this.$emit('update:modelEmail', newValue)
         }
     },
-    address:{
-        get(){
+    address : {
+        get() {
           return this.takeAddress
         },
-        set(newValue){
+        set(newValue) {
           this.$emit('update:modelAddress', newValue)
         }
+
+    },
+    // photo : {
+    //     get() {
+    //         return this.photoPresence;
+    //     },
+    //     set(newValue) {
+    //         this.$emit('update:modelPhoto', newValue)
+    //     }
+   // },
+    isEmptyModal: function() {
+      return this.isModalEmpty;
     },
     sentPhotopath:function(){
       return this.takePhotopath
@@ -124,7 +157,10 @@ export default {
       // address: this.sentAddress,
       photo: this.photoPresence,
     }
-  }
+  },
+    // components: {
+    //     FileInput
+    // }
 }
 </script>
 
@@ -165,6 +201,7 @@ export default {
   left:  50%;
   transform: translate(-50%, -50%);
   opacity: 100%;
+    transition: 500ms;
 }
 .edit-form {
   display: flex;
@@ -282,5 +319,22 @@ export default {
   border: solid 2px black;
   font-size: 20px;
   text-transform: uppercase;
+}
+
+input[type=file] {
+    margin-top: 4px;
+    max-width: 90%;
+}
+
+.foto-shrinked {
+    max-height: 30% !important;
+    max-width: 50% !important;
+}
+
+@media screen and (max-width: 1100px){
+    .card {
+        min-width: 80%;
+        max-width: 90%;
+    }
 }
 </style>

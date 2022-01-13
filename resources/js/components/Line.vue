@@ -1,6 +1,7 @@
 <template>
     <div class="cell">
-      <div><input type="checkbox" v-model="checkedLine" name="selectOne" :checked="isChecked"></div>
+<!--      <div><input type="checkbox" v-model="checkedLine" name="selectOne" :checked="thisCheckbox"></div>-->
+      <div><input type="checkbox" v-model="checkedLine" name="selectOne" :checked="thisCheckbox"></div>
       <div class="for-foto"><img class="preview" :src="user.photo" alt="X"></div>
       <div><h6>{{user.name}}</h6></div>
       <div><h6>{{user.email}}</h6></div>
@@ -26,12 +27,14 @@ import moment from 'moment';
 export default {
   name: "user-row",
   props: [
-      'isChecked',
+      'isAllChecked',
+      'isOneChecked',
       'isPopUp',
       'user',
       'index',
       'popupNow',
-      'chekLine'
+      'chekLine',
+      'selectedRows'
   ],
   emits:[
     'showModal',
@@ -45,11 +48,16 @@ export default {
   ],
   computed : {
     thisCheckbox: function() {
-      return this.isChecked;
+        for (let i = 0; i < this.selectedRows.length; i++){
+            if (this.index === parseInt(this.selectedRows[i])) {
+                return true;
+            }
+        }
+        return false;
     },
     checkedLine : {
       get() {
-        return this.isChecked;
+        return this.isAllChecked;
       },
       set(value) {
         this.$emit('update:checkedLine', value)

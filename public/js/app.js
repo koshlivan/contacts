@@ -5351,20 +5351,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 //import HelloWorld from "@/components/HelloWorld";
 //@change="checkboxChanged"
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "user-row",
-  props: ['isChecked', 'isPopUp', 'user', 'index', 'popupNow', 'chekLine'],
+  props: ['isAllChecked', 'isOneChecked', 'isPopUp', 'user', 'index', 'popupNow', 'chekLine', 'selectedRows'],
   emits: ['showModal', 'viewPopup', 'singleCheckBoxSelected', 'singleCheckBoxUnSelected', 'singleCheckBoxChanged', 'showFilledModal', 'deleteOne', 'update:checkedLine'],
   computed: {
     thisCheckbox: function thisCheckbox() {
-      return this.isChecked;
+      for (var i = 0; i < this.selectedRows.length; i++) {
+        if (this.index === parseInt(this.selectedRows[i])) {
+          return true;
+        }
+      }
+
+      return false;
     },
     checkedLine: {
       get: function get() {
-        return this.isChecked;
+        return this.isAllChecked;
       },
       set: function set(value) {
         this.$emit('update:checkedLine', value);
@@ -5502,10 +5509,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//import FileInput from 'vue3-simple-file-input'
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Modal",
-  props: ['modelName', 'modelEmail', 'modelAddress', 'takeName', 'takeAddress', 'takeEmail', 'takePhotopath'],
-  emits: ['update:modelName', 'update:modelEmail', 'update:modelAddress', 'submitted', 'modal-close'],
+  props: ['modelName', 'modelEmail', 'modelAddress', 'takeName', 'takeAddress', 'takeEmail', 'takePhotopath', 'isModalEmpty'],
+  emits: ['update:modelName', 'update:modelEmail', 'update:modelAddress', 'update:modelPhoto', 'submitted', 'modal-close'],
   methods: {
     onSubmit: function onSubmit() {
       this.$emit('submitted', {
@@ -5514,6 +5523,26 @@ __webpack_require__.r(__webpack_exports__);
         address: this.address,
         photo: this.photo
       });
+    },
+    onFileChange: function onFileChange(e) {
+      var files = e.target.files || e.dataTransfer.files;
+
+      if (!files.length) {
+        return;
+      }
+
+      this.createImage(files[0]);
+    },
+    createImage: function createImage(file) {
+      var image = new Image();
+      var reader = new FileReader();
+      var vm = this;
+
+      reader.onload = function (e) {
+        vm.image = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
     }
   },
   computed: {
@@ -5541,6 +5570,17 @@ __webpack_require__.r(__webpack_exports__);
         this.$emit('update:modelAddress', newValue);
       }
     },
+    // photo : {
+    //     get() {
+    //         return this.photoPresence;
+    //     },
+    //     set(newValue) {
+    //         this.$emit('update:modelPhoto', newValue)
+    //     }
+    // },
+    isEmptyModal: function isEmptyModal() {
+      return this.isModalEmpty;
+    },
     sentPhotopath: function sentPhotopath() {
       return this.takePhotopath;
     },
@@ -5559,7 +5599,10 @@ __webpack_require__.r(__webpack_exports__);
       // address: this.sentAddress,
       photo: this.photoPresence
     };
-  }
+  } // components: {
+  //     FileInput
+  // }
+
 });
 
 /***/ }),
@@ -5643,7 +5686,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//@change="$emit('setAllChecked')"
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "TableHead",
   props: {
@@ -5678,23 +5720,25 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     /*sort by key and order*/
     sortBy: function sortBy(key, order) {
-      return this.users.sort(function (a, b) {
-        return a[key] < b[key] ? -order : a[key] > b[key] ? order : 0;
+      var _this2 = this;
+
+      axios.get('/api/users/?sorting=' + key + '&sortOrder=' + order) // axios.get('/api/users/', {
+      //         sorting : key,
+      //         sortOrder : order
+      // })
+      .then(function (response) {
+        for (var i = 0; i < _this2.users.length; i++) {
+          _this2.users[i] = response.data.data[i];
+        }
       });
     },
 
     /*sort by pressing column name*/
     sort: function sort(data) {
-      this.sorting = data;
-      console.log(this.users[0].name);
+      this.sorting = data; //this.sortBy(this.sorting, this.sortingVector);
 
-      if (isNaN(Date.parse(this.users[0][this.sorting]))) {
-        this.sortBy(this.sorting, this.sortingVector);
-        this.sortingVector > 0 ? this.sortingVector = -1 : this.sortingVector = 1;
-      } else {
-        this.sortCreated(this.sortingVector);
-        this.sortingVector > 0 ? this.sortingVector = -1 : this.sortingVector = 1;
-      }
+      this.sortingVector > 0 ? this.sortingVector = -1 : this.sortingVector = 1;
+      this.emitSort();
     },
 
     /*which arrow will light*/
@@ -5706,42 +5750,14 @@ __webpack_require__.r(__webpack_exports__);
       return false;
     },
 
-    /*sort by created date asc and desc*/
-    // sortCreated(order) {
-    //   return this.users.sort( function (a, b) {
-    //     let dateOne = Date.parse( a['created'] );
-    //     let dateTwo = Date.parse( b['created'] );
-    //
-    //     if (dateTwo > dateOne) {
-    //       return -(order);
-    //     }
-    //     if ( dateTwo < dateOne) {
-    //       return order;
-    //     }
-    //
-    //     return 0;
-    //   } )
-    // },
-    sortCreated: function sortCreated(order) {
-      return this.users.sort(function (a, b) {
-        var dateOne = Date.parse(a['created']);
-        var dateTwo = Date.parse(b['created']);
-
-        if (dateTwo > dateOne) {
-          return -order;
-        }
-
-        if (dateTwo < dateOne) {
-          return order;
-        }
-
-        return 0;
-      });
-    },
-
     /*on sort has been done*/
     emitSort: function emitSort() {
-      this.$emit('sortDone', this.users);
+      console.log(this.users[0].name); //this.$emit('sortDone', this.users);
+
+      this.$emit('sortDone', {
+        sorting: this.sorting,
+        sortOrder: this.sortingVector
+      });
     }
   }
 });
@@ -5836,6 +5852,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -5862,7 +5882,9 @@ __webpack_require__.r(__webpack_exports__);
       addressToSend: '',
       photopathToSend: '',
       isAllChecked: false,
+      isOneChecked: false,
       isShowModal: false,
+      isModalEmpty: false,
       item: -1,
       isExisted: false,
       sender: -1,
@@ -5883,6 +5905,9 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     thisDate: function thisDate() {
       return new Date().getFullYear() + '-' + new Date().getMonth() + '-' + new Date().getDate();
+    },
+    isChecked: function isChecked() {
+      return this.isAllChecked && this.isOneChecked;
     }
   },
   mounted: function mounted() {
@@ -5902,19 +5927,15 @@ __webpack_require__.r(__webpack_exports__);
       if ($event === true) {
         this.isAllChecked = true;
         this.selectedLines = [];
-        console.log(this.users.length);
 
         for (var i = 0; i < this.users.length; i++) {
           this.selectedLines.push(i);
         }
-
-        console.log(this.selectedLines);
       }
 
       if ($event === false) {
         this.selectedLines = [];
         this.isAllChecked = false;
-        console.log(this.selectedLines);
       }
     },
 
@@ -5930,12 +5951,15 @@ __webpack_require__.r(__webpack_exports__);
         this.selectedLines.splice(needIndex, 1);
         console.log('was removeded', this.selectedLines);
       }
+
+      console.log(this.isAllChecked);
     },
 
     /*empty modal window for adding a new user*/
     showModal: function showModal(index) {
       if (index < 0) {
         this.emptyUser();
+        this.isModalEmpty = true;
         this.isShowModal = true;
       }
     },
@@ -5943,6 +5967,7 @@ __webpack_require__.r(__webpack_exports__);
     /*close modal*/
     modalClose: function modalClose() {
       this.isShowModal = false;
+      this.isModalEmpty = false;
       this.isPopUp = false;
       this.emptyUser();
     },
@@ -5960,6 +5985,7 @@ __webpack_require__.r(__webpack_exports__);
 
     /*opens modal window with filled inputs with information of user*/
     showFilledModal: function showFilledModal(index) {
+      this.isModalEmpty = false;
       this.isExisted = true;
       this.sender = this.users[index].id;
       this.senderIndex = index;
@@ -5968,7 +5994,6 @@ __webpack_require__.r(__webpack_exports__);
       this.addressToSend = this.users[index].address;
       this.photopathToSend = this.users[index].photo;
       this.isShowModal = true;
-      console.log(this.isExisted, this.sender, this.senderIndex, this.nameToSend, this.emailToSend, this.addressToSend, this.photopathToSend);
     },
 
     /*save user from modal window*/
@@ -5990,6 +6015,7 @@ __webpack_require__.r(__webpack_exports__);
         this.saveNewUser(newUser);
       }
 
+      console.log(this.photopathToSend);
       this.modalClose();
     },
 
@@ -6056,7 +6082,7 @@ __webpack_require__.r(__webpack_exports__);
 
       var singleDelete = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       var id = this.users[index].id;
-      axios["delete"]('/api/users/' + id).then(function (response) {
+      axios["delete"]('/api/users/' + id).then(function () {
         if (singleDelete) {
           _this4.users.splice(index, 1);
         }
@@ -6069,17 +6095,33 @@ __webpack_require__.r(__webpack_exports__);
     remove: function remove() {
       for (var i = 0, k = 0; i < this.selectedLines.length; i++, k++) {
         var deleted = Number.parseInt(this.selectedLines[i]) - k;
-        console.log(deleted, this.selectedLines);
         this.deleteOne(deleted, false);
         this.users.splice(deleted, 1);
       }
 
-      this.selectedLines = [];
-      this.isAllChecked = false;
-      console.log(this.isAllChecked);
+      this.allChecked(false);
+      this.isOneChecked = false;
+      console.log(this.isAllChecked + ' ' + this.isChecked);
     },
     makeSort: function makeSort($event) {
-      this.users = $event;
+      var _this5 = this;
+
+      //this.users = $event;
+      console.log($event.sorting + $event.sortOrder + 'it is event allready. next will be request');
+      axios.get('/api/users/?sorting=' + $event.sorting + '&sortOrder=' + $event.sortOrder) // axios.get('/api/users/', {
+      //         headers: {
+      //           Accept: 'application/x-www-form-urlencoded'
+      //         },
+      //         sorting : $event.sorting,
+      //         sortOrder : $event.sortOrder
+      //      })
+      .then(function (response) {
+        for (var i = 0; i < _this5.users.length; i++) {
+          _this5.users[i] = response.data.data[i];
+        }
+
+        _this5.users = response.data.data;
+      });
     }
   }
 });
@@ -11283,7 +11325,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.head[data-v-53ab54d2] {\n  margin-top: 1rem;\n}\n.foto[data-v-53ab54d2]{\n  margin: 0.5rem 0 0.5rem 1.5rem;\n  display:flex;\n  flex-direction: column;\n  justify-content: flex-start;\n  align-items: stretch;\n}\n.foto img[data-v-53ab54d2]{\n  min-height: 80%;\n}\n#field[data-v-53ab54d2] {\n  min-width: 100%;\n  min-height: 100vh;\n  background-color: rgba(105, 105, 105, 0.7);\n  display: flex;\n  justify-content: center;\n  align-content: center;\n  z-index: 4;\n  position: absolute;\n  top: 0;\n}\n.card[data-v-53ab54d2] {\n  min-width: 30%;\n  max-width: 40%;\n  height: 25rem;\n  border-radius: 1rem;\n  box-shadow: 0 0 5px rgba(10, 10, 10, 0.8);\n  position: absolute;\n  top: 50%;\n  left:  50%;\n  transform: translate(-50%, -50%);\n  opacity: 100%;\n}\n.edit-form[data-v-53ab54d2] {\n  display: flex;\n  min-height: 100%;\n  flex-direction: column;\n  justify-content: space-around;\n  align-items: stretch;\n  opacity: 100%;\n}\n.edit-form div[data-v-53ab54d2]:nth-child(2n+1){\n  min-height: 20%;\n}\n.edit-form div[data-v-53ab54d2]:nth-child(2n){\n  min-height: 60%;\n}\n.head[data-v-53ab54d2]{\n  display: flex;\n  justify-content: space-between;\n  align-items: stretch;\n  margin-top: 1rem;\n  padding-top: 1rem;\n}\n.head h2[data-v-53ab54d2] {\n  margin: 1rem;\n}\n.head img[data-v-53ab54d2]{\n  max-height: 80%;\n  margin-right: 0.5rem;\n  margin-top: 0.5rem;\n  transition: 300ms;\n}\n.head img[data-v-53ab54d2]:hover{\n  max-height: 85%;\n  cursor: pointer;\n  box-shadow: 0 0 3px gray;\n}\n.head img[data-v-53ab54d2]:active{\n  max-height: 85%;\n  cursor: pointer;\n  box-shadow: 0 0 5px red;\n}\n.close-butt[data-v-53ab54d2]{\n  margin-right: 0.5rem;\n  margin-top: 0.5rem;\n  transition: 300ms;\n}\n.close-butt span[data-v-53ab54d2]:hover{\n  cursor: pointer;\n  box-shadow: 0 0 3px gray;\n}\n.inputs[data-v-53ab54d2] {\n  display: flex;\n  justify-content: space-around;\n  align-items: stretch;\n}\n.vert[data-v-53ab54d2] {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: stretch;\n  max-width: 60%;\n}\n.vert label[data-v-53ab54d2] {\n  padding-left: 2rem;\n}\n.vert input[data-v-53ab54d2] {\n  border: solid 2px black;\n}\n.foto[data-v-53ab54d2]{\n  display: flex;\n  max-width: 40%;\n  justify-content: center;\n  align-items: center;\n}\n.foto img[data-v-53ab54d2]{\n  max-height: 95%;\n  max-width: 95%;\n}\n.finish[data-v-53ab54d2] {\n  display: flex;\n  justify-content: flex-end;\n  align-items: stretch;\n  margin: 2rem 0;\n}\n.finish button[data-v-53ab54d2]{\n  max-height: 2.5rem;\n}\n.finish button[data-v-53ab54d2]:nth-child(2n){\n  margin-right: 4rem;\n  margin-left: 1rem;\n}\n#save[data-v-53ab54d2] {\n  background-color: #0a53be;\n  color: white;\n  border: solid 2px black;\n  font-size: 20px;\n  text-transform: uppercase;\n}\n#save span[data-v-53ab54d2]{\n  vertical-align: text-bottom;\n}\n#close[data-v-53ab54d2] {\n  background-color: #808080;\n  color: white;\n  border: solid 2px black;\n  font-size: 20px;\n  text-transform: uppercase;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.head[data-v-53ab54d2] {\n  margin-top: 1rem;\n}\n.foto[data-v-53ab54d2]{\n  margin: 0.5rem 0 0.5rem 1.5rem;\n  display:flex;\n  flex-direction: column;\n  justify-content: flex-start;\n  align-items: stretch;\n}\n.foto img[data-v-53ab54d2]{\n  min-height: 80%;\n}\n#field[data-v-53ab54d2] {\n  min-width: 100%;\n  min-height: 100vh;\n  background-color: rgba(105, 105, 105, 0.7);\n  display: flex;\n  justify-content: center;\n  align-content: center;\n  z-index: 4;\n  position: absolute;\n  top: 0;\n}\n.card[data-v-53ab54d2] {\n  min-width: 30%;\n  max-width: 40%;\n  height: 25rem;\n  border-radius: 1rem;\n  box-shadow: 0 0 5px rgba(10, 10, 10, 0.8);\n  position: absolute;\n  top: 50%;\n  left:  50%;\n  transform: translate(-50%, -50%);\n  opacity: 100%;\n    transition: 500ms;\n}\n.edit-form[data-v-53ab54d2] {\n  display: flex;\n  min-height: 100%;\n  flex-direction: column;\n  justify-content: space-around;\n  align-items: stretch;\n  opacity: 100%;\n}\n.edit-form div[data-v-53ab54d2]:nth-child(2n+1){\n  min-height: 20%;\n}\n.edit-form div[data-v-53ab54d2]:nth-child(2n){\n  min-height: 60%;\n}\n.head[data-v-53ab54d2]{\n  display: flex;\n  justify-content: space-between;\n  align-items: stretch;\n  margin-top: 1rem;\n  padding-top: 1rem;\n}\n.head h2[data-v-53ab54d2] {\n  margin: 1rem;\n}\n.head img[data-v-53ab54d2]{\n  max-height: 80%;\n  margin-right: 0.5rem;\n  margin-top: 0.5rem;\n  transition: 300ms;\n}\n.head img[data-v-53ab54d2]:hover{\n  max-height: 85%;\n  cursor: pointer;\n  box-shadow: 0 0 3px gray;\n}\n.head img[data-v-53ab54d2]:active{\n  max-height: 85%;\n  cursor: pointer;\n  box-shadow: 0 0 5px red;\n}\n.close-butt[data-v-53ab54d2]{\n  margin-right: 0.5rem;\n  margin-top: 0.5rem;\n  transition: 300ms;\n}\n.close-butt span[data-v-53ab54d2]:hover{\n  cursor: pointer;\n  box-shadow: 0 0 3px gray;\n}\n.inputs[data-v-53ab54d2] {\n  display: flex;\n  justify-content: space-around;\n  align-items: stretch;\n}\n.vert[data-v-53ab54d2] {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: stretch;\n  max-width: 60%;\n}\n.vert label[data-v-53ab54d2] {\n  padding-left: 2rem;\n}\n.vert input[data-v-53ab54d2] {\n  border: solid 2px black;\n}\n.foto[data-v-53ab54d2]{\n  display: flex;\n  max-width: 40%;\n  justify-content: center;\n  align-items: center;\n}\n.foto img[data-v-53ab54d2]{\n  max-height: 95%;\n  max-width: 95%;\n}\n.finish[data-v-53ab54d2] {\n  display: flex;\n  justify-content: flex-end;\n  align-items: stretch;\n  margin: 2rem 0;\n}\n.finish button[data-v-53ab54d2]{\n  max-height: 2.5rem;\n}\n.finish button[data-v-53ab54d2]:nth-child(2n){\n  margin-right: 4rem;\n  margin-left: 1rem;\n}\n#save[data-v-53ab54d2] {\n  background-color: #0a53be;\n  color: white;\n  border: solid 2px black;\n  font-size: 20px;\n  text-transform: uppercase;\n}\n#save span[data-v-53ab54d2]{\n  vertical-align: text-bottom;\n}\n#close[data-v-53ab54d2] {\n  background-color: #808080;\n  color: white;\n  border: solid 2px black;\n  font-size: 20px;\n  text-transform: uppercase;\n}\ninput[type=file][data-v-53ab54d2] {\n    margin-top: 4px;\n    max-width: 90%;\n}\n.foto-shrinked[data-v-53ab54d2] {\n    max-height: 30% !important;\n    max-width: 50% !important;\n}\n@media screen and (max-width: 1100px){\n.card[data-v-53ab54d2] {\n        min-width: 80%;\n        max-width: 90%;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -62514,7 +62556,7 @@ var render = function () {
         ],
         attrs: { type: "checkbox", name: "selectOne" },
         domProps: {
-          checked: _vm.isChecked,
+          checked: _vm.thisCheckbox,
           checked: Array.isArray(_vm.checkedLine)
             ? _vm._i(_vm.checkedLine, null) > -1
             : _vm.checkedLine,
@@ -62812,7 +62854,10 @@ var render = function () {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "foto" }, [
-              _c("img", { attrs: { src: _vm.photoPresence, alt: "&#9587;" } }),
+              _c("img", {
+                class: { "foto-shrinked": _vm.isEmptyModal },
+                attrs: { src: _vm.photoPresence, alt: "&#9587;" },
+              }),
             ]),
           ]),
           _vm._v(" "),
@@ -62995,7 +63040,7 @@ var render = function () {
           attrs: { title: "Sort by Date" },
           on: {
             click: function ($event) {
-              return _vm.sort("created")
+              return _vm.sort("created_at")
             },
           },
         },
@@ -63007,7 +63052,7 @@ var render = function () {
               "span",
               {
                 staticClass: "material-icons",
-                class: { "arrow-active": _vm.isArrowLight("created", -1) },
+                class: { "arrow-active": _vm.isArrowLight("created_at", -1) },
               },
               [_vm._v("arrow_drop_up")]
             ),
@@ -63016,7 +63061,7 @@ var render = function () {
               "span",
               {
                 staticClass: "material-icons",
-                class: { "arrow-active": _vm.isArrowLight("created", 1) },
+                class: { "arrow-active": _vm.isArrowLight("created_at", 1) },
               },
               [_vm._v("arrow_drop_down")]
             ),
@@ -63167,11 +63212,13 @@ var render = function () {
                   _vm._v(" "),
                   _vm._l(_vm.users, function (user, index) {
                     return _c("user-row", {
-                      key: user.number,
+                      key: user.id,
                       ref: "lineComponent",
                       refInFor: true,
                       attrs: {
-                        "is-checked": _vm.isAllChecked,
+                        "is-all-checked": _vm.isAllChecked,
+                        "is-one-checked": _vm.isOneChecked,
+                        "selected-rows": _vm.selectedLines,
                         "is-pop-up": _vm.isPopUp,
                         "popup-now": _vm.popupNow,
                         index: index,
@@ -63222,6 +63269,7 @@ var render = function () {
           modelName: _vm.nameToSend,
           modelEmail: _vm.emailToSend,
           modelAddress: _vm.addressToSend,
+          "is-modal-empty": _vm.isModalEmpty,
           "take-name": _vm.nameToSend,
           "take-email": _vm.emailToSend,
           "take-address": _vm.addressToSend,
@@ -63238,6 +63286,9 @@ var render = function () {
           },
           "update:modelAddress": function ($event) {
             _vm.addressToSend = $event
+          },
+          "update:modelPhoto": function ($event) {
+            _vm.photopathToSend = $event
           },
         },
       }),

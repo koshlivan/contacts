@@ -26,6 +26,7 @@
     "dependencies": {
         "jquery": "^3.6.0",
         "moment": "^2.29.1",
-        "vue-router": "^3.5.3"
+        "vue-router": "^3.5.3",
+        "vue3-simple-file-input": "^1.0.3"
     }
 }
