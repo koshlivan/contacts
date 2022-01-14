@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import {eventBus} from "../app";
 
 export default {
   name: "TableHead",
@@ -85,7 +86,8 @@ export default {
         return this.allCheck
       },
       set(value) {
-        this.$emit('update:checkAllLines', value)
+        //this.$emit('update:checkAllLines', value);
+        eventBus.$emit('update:checkAllLines', value);
       }
     }
   },
@@ -120,7 +122,6 @@ export default {
     /*sort by pressing column name*/
     sort(data) {
       this.sorting=data;
-      //this.sortBy(this.sorting, this.sortingVector);
 
       (this.sortingVector > 0) ? this.sortingVector = -1 : this.sortingVector = 1;
 
@@ -137,8 +138,6 @@ export default {
 
     /*on sort has been done*/
     emitSort() {
-        console.log(this.users[0].name);
-      //this.$emit('sortDone', this.users);
       this.$emit('sortDone', {
           sorting: this.sorting,
           sortOrder: this.sortingVector

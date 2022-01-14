@@ -13,19 +13,44 @@
 </template>
 
 <script>
+import {eventBus} from "../app";
+import apiService from '../apiService';
+
 export default {
   name: "Cap",
   emits:[
-    'showModal',
+    'showEmptyModal',
     'deleteSelected'
   ],
-  methods:{
+    methods:{
     showDialog(){
-      this.$emit('showModal');
+      //this.$emit('showEmptyModal');
+        console.log(this.isModalEmpty, this.isShowModal);
+      eventBus.$emit('showEmptyModal', true);
     },
     deleteSelected(){
-      this.$emit('deleteSelected');
-    }
+        eventBus.$emit('deleteSelected', true);
+    },
+
+      /*empty modal window for adding a new user*/
+      showModal(index) {
+          if (index < 0) {
+              this.emptyUser();
+              console.log(this.isModalEmpty, this.isShowModal)
+              this.isModalEmpty = true;
+              this.isShowModal = true;
+          }
+      },
+      /*empty properties of user*/
+      emptyUser() {
+          this.isExisted = false;
+          this.sender = -1;
+          this.senderIndex = -1;
+          this.nameToSend = '';
+          this.emailToSend = '';
+          this.addressToSend = '';
+          this.photopathToSend = '';
+      },
   }
 }
 </script>

@@ -35,7 +35,6 @@
           </div>
           <div class="foto">
             <img :src="photoPresence" alt="&#9587;" :class="{'foto-shrinked': isEmptyModal}">
-<!--              <file-input v-model="YourModel" v-show="isEmptyModal"></file-input>-->
 <!--              <input type="file" v-show="isEmptyModal" @change="onFileChange">-->
           </div>
         </div>
@@ -50,7 +49,6 @@
 </template>
 
 <script>
-//import FileInput from 'vue3-simple-file-input'
 export default {
   name: "Modal",
 
@@ -69,7 +67,6 @@ export default {
       'update:modelName',
       'update:modelEmail',
       'update:modelAddress',
-      'update:modelPhoto',
     'submitted',
     'modal-close'
   ],
@@ -83,25 +80,7 @@ export default {
         photo: this.photo,
       });
     },
-      onFileChange(e){
-          var files = e.target.files || e.dataTransfer.files;
-          if (!files.length) {
-              return;
-          }
-          this.createImage(files[0]);
-      },
-      createImage(file) {
-          var image = new Image();
-          var reader = new FileReader();
-          var vm = this;
-
-          reader.onload = (e) => {
-              vm.image = e.target.result;
-          };
-          reader.readAsDataURL(file);
-      },
   },
-
   computed : {
       name : {
         get(){
@@ -126,41 +105,23 @@ export default {
         set(newValue) {
           this.$emit('update:modelAddress', newValue)
         }
-
     },
-    // photo : {
-    //     get() {
-    //         return this.photoPresence;
-    //     },
-    //     set(newValue) {
-    //         this.$emit('update:modelPhoto', newValue)
-    //     }
-   // },
-    isEmptyModal: function() {
+    isEmptyModal : function() {
       return this.isModalEmpty;
     },
-    sentPhotopath:function(){
-      return this.takePhotopath
-    },
-    photoPresence: function(){
-        if(this.sentPhotopath==''){
-          return 'assets/none.png'
+    photoPresence : function() {
+        if(this.takePhotopath=='') {
+          return 'assets/none.png';
         }
-        return this.sentPhotopath
+        return this.takePhotopath;
     }
   },
 
   data(){
     return{
-      // name: this.sentName,
-      // email: this.sentEmail,
-      // address: this.sentAddress,
       photo: this.photoPresence,
     }
   },
-    // components: {
-    //     FileInput
-    // }
 }
 </script>
 

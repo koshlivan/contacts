@@ -30,6 +30,32 @@ import App from './components/app.vue'
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+export const eventBus = new Vue();
+
+// const Mixin ={
+//     data() {
+//         return {
+//             users: [],
+//             isPopUp :false,
+//             popupNow :-1,
+//             nameToSend :'',
+//             emailToSend :'',
+//             addressToSend :'',
+//             photopathToSend :'',
+//             isAllChecked : false,
+//             isOneChecked: false,
+//             isShowModal : false,
+//             isModalEmpty: false,
+//             item : -1,
+//             isExisted : false,
+//             sender : -1,
+//             senderIndex: -1,
+//             selectedLines : [],
+//             loading : true
+//         }
+//     }
+// }
+
 const app = new Vue({
     el: '#app',
     components: {

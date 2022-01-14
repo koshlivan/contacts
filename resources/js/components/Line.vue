@@ -1,6 +1,5 @@
 <template>
     <div class="cell">
-<!--      <div><input type="checkbox" v-model="checkedLine" name="selectOne" :checked="thisCheckbox"></div>-->
       <div><input type="checkbox" v-model="checkedLine" name="selectOne" :checked="thisCheckbox"></div>
       <div class="for-foto"><img class="preview" :src="user.photo" alt="X"></div>
       <div><h6>{{user.name}}</h6></div>
@@ -11,7 +10,7 @@
         <h6 id="ellips"
             title="Press to show addition options"
             @click="options">&#x22EE;</h6>
-        <div id="options" v-show="isPopUp && index==popupNow">
+        <div id="options" v-show="isOpened && index==popupNow && showOptions">
           <h6 @click="showModal"><span class="material-icons">menu</span>View</h6>
           <h6 @click="singleDelete"><span class="material-icons basket">delete</span>Delete</h6>
         </div>
@@ -20,8 +19,8 @@
 </template>
 
 <script>
-//import HelloWorld from "@/components/HelloWorld";
-//@change="checkboxChanged"
+import apiService from '../apiService';
+import {eventBus} from "../app";
 import moment from 'moment';
 
 export default {
@@ -34,7 +33,7 @@ export default {
       'index',
       'popupNow',
       'chekLine',
-      'selectedRows'
+      'selectedRows',
   ],
   emits:[
     'showModal',
@@ -62,10 +61,18 @@ export default {
       set(value) {
         this.$emit('update:checkedLine', value)
       }
-    }
+    },
+      isOpened : {
+        get() {
+            this.showOptions=true;
+            return this.isPopUp;
+          },
+          set(value) {
+            this.showOptions=value;
+          }
+      }
   },
   methods:{
-
     options(){
       this.$emit('viewPopup', this.checkedLine);
     },
@@ -87,12 +94,15 @@ export default {
     },
 
     showModal(){
-      this.$emit('showFilledModal');
-      this.showOptions=false;
-    },
-
-    allCheckedHandler(){
-      //this.$parent.$on('allChecked', this.checkboxChanged());
+        console.log('before emit submit');
+      eventBus.$emit('showFilledModal', {
+          name : this.user.name,
+          email : this.user.email,
+          address : this.user.address,
+          photo : this.user.photo,
+      });
+        console.log('after emit submit', this.user.name, this.user.email);
+      this.isOpened=false;
     },
 
     checkboxChanged(){
@@ -106,14 +116,17 @@ export default {
     },
 
     singleDelete(){
+      apiService.deleteOne(this.user.id);
+
       this.$emit('deleteOne');
-      this.showOptions=false;
+      this.isOpened=false;
     },
   },
 
   data(){
     return{
-      checkboxSelect: this.thisCheckbox
+      checkboxSelect : this.thisCheckbox,
+        showOptions : true
     }
   }
 }
