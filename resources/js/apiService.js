@@ -11,7 +11,7 @@ export default{
             name: user.name,
             email: user.email,
             address: user.address,
-            photo: user.photopath
+            photo: user.photo
         });
     },
 

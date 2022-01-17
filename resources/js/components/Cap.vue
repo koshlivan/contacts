@@ -14,43 +14,22 @@
 
 <script>
 import {eventBus} from "../app";
-import apiService from '../apiService';
 
 export default {
-  name: "Cap",
-  emits:[
+  name : "Cap",
+  emits : [
     'showEmptyModal',
     'deleteSelected'
   ],
     methods:{
-    showDialog(){
-      //this.$emit('showEmptyModal');
-        console.log(this.isModalEmpty, this.isShowModal);
+    showDialog() {
+        /*emits to newModal*/
       eventBus.$emit('showEmptyModal', true);
     },
-    deleteSelected(){
+    deleteSelected() {
+        /*emits to Users*/
         eventBus.$emit('deleteSelected', true);
     },
-
-      /*empty modal window for adding a new user*/
-      showModal(index) {
-          if (index < 0) {
-              this.emptyUser();
-              console.log(this.isModalEmpty, this.isShowModal)
-              this.isModalEmpty = true;
-              this.isShowModal = true;
-          }
-      },
-      /*empty properties of user*/
-      emptyUser() {
-          this.isExisted = false;
-          this.sender = -1;
-          this.senderIndex = -1;
-          this.nameToSend = '';
-          this.emailToSend = '';
-          this.addressToSend = '';
-          this.photopathToSend = '';
-      },
   }
 }
 </script>

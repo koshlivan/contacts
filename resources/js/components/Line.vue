@@ -22,9 +22,11 @@
 import apiService from '../apiService';
 import {eventBus} from "../app";
 import moment from 'moment';
+import AppMixin from '../AppMixin';
 
 export default {
   name: "user-row",
+  mixins: [AppMixin],
   props: [
       'isAllChecked',
       'isOneChecked',
@@ -76,17 +78,7 @@ export default {
     options(){
       this.$emit('viewPopup', this.checkedLine);
     },
-
-    optionsShow(param){
-     if(param===true){
-       this.showOptions=false;
-     }
-     else{
-       this.showOptions=!this.showOptions
-     }
-    },
-
-      /*convert date to display*/
+    /*convert date to display*/
     displayProperDate(givenDate) {
         if(givenDate) {
             return moment( String(givenDate) ).format('DD.MM.YYYY');
@@ -94,15 +86,15 @@ export default {
     },
 
     showModal(){
-        console.log('before emit submit');
+        /*catch in newModal*/
       eventBus.$emit('showFilledModal', {
           name : this.user.name,
           email : this.user.email,
           address : this.user.address,
           photo : this.user.photo,
+          sender : this.index,
       });
-        console.log('after emit submit', this.user.name, this.user.email);
-      this.isOpened=false;
+      this.isOpened = false;
     },
 
     checkboxChanged(){

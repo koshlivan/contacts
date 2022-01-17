@@ -68,66 +68,47 @@
 
 <script>
 import {eventBus} from "../app";
+import apiService from "../apiService";
 
 export default {
   name: "TableHead",
   props: {
     allCheck: Boolean,
-    useres: Array,
   },
   emits:[
-    'setAllChecked',
     'update:checkAllLines',
     'sortDone'
   ],
   computed:{
     checkAll:{
       get() {
-        return this.allCheck
+        return this.allCheck;
       },
       set(value) {
-        //this.$emit('update:checkAllLines', value);
         eventBus.$emit('update:checkAllLines', value);
       }
     }
   },
   data() {
     return {
-      users: [],
       sorting: '',
       sortingVector: 1,
     }
   },
-    mounted(){
-      axios.get('api/users/')
-          .then( response => {this.users=response.data.data});
-    },
   methods: {
-
-    /*sort by key and order*/
-    sortBy( key, order ) {
-        axios.get('/api/users/?sorting='+key+'&sortOrder='+order)
-        // axios.get('/api/users/', {
-        //         sorting : key,
-        //         sortOrder : order
-        // })
-        .then( response => {
-            for(let i=0; i<this.users.length; i++){
-                this.users[i] = response.data.data[i];
-            }
-
-        } );
-    },
-
     /*sort by pressing column name*/
     sort(data) {
       this.sorting=data;
-
       (this.sortingVector > 0) ? this.sortingVector = -1 : this.sortingVector = 1;
 
-      this.emitSort();
+      apiService.makeSort({
+          sorting : this.sorting,
+          sortOrder : this.sortingVector
+      })
+        .then( response => {/*emits to Users*/
+            eventBus.$emit('sortDone', {users : response.data.data});
+        })
     },
-
     /*which arrow will light*/
     isArrowLight(column, order) {
       if (column === this.sorting && order === this.sortingVector) {
@@ -135,14 +116,6 @@ export default {
       }
       return false;
     },
-
-    /*on sort has been done*/
-    emitSort() {
-      this.$emit('sortDone', {
-          sorting: this.sorting,
-          sortOrder: this.sortingVector
-      });
-    }
   }
 }
 </script>

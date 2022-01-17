@@ -141,15 +141,12 @@ export default {
             });
     },
     /*delete selected users by pressing one button*/
-    remove(deletedItems) {
-        for (let i=0, k=0; i < deletedItems.length; i++, k++) {
-            let deleted = Number.parseInt(deletedItems[i])-k;
-            this.deleteOne(deleted, false);
-            this.users.splice(deleted, 1);
+    remove(deletedItems, users) {
+        for (let i = 0; i < deletedItems.length; i++) {
+            let deleted = Number.parseInt(deletedItems[i]);
+
+            apiService.deleteOne(users[deleted].id);
         }
-        this.allChecked(false);
-        this.isOneChecked=false;
-        console.log(this.isAllChecked+' '+this.isChecked);
     },
     makeSort($event) {
         //this.users = $event;

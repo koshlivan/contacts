@@ -19,23 +19,20 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        //$forSorting=json_decode($request);
+        $query = User::query();
+
         if ( isset( $request -> sorting ) ) {
             $users = [];
             $sortingOrder=(int)$request -> sortOrder;
             if ( $sortingOrder === -1 ) {
-            $users = User::all() -> sortBy( $request -> sorting );
-            //return 'sort asc '. $request;
+            $users = $query -> get() -> sortBy( $request -> sorting );
             }
             if ( $sortingOrder === 1 ) {
-                $users = User::all() -> sortByDesc( $request -> sorting );
-                //return 'sort desc '. $request;
+                $users = $query -> get() -> sortByDesc( $request -> sorting );
             }
-            //return 'order missing';
            return UserResource::collection( $users );
         }
-        //return 'request empty';
-       return UserResource::collection( User::all() );
+       return UserResource::collection( $query->get() );
     }
 
     /**

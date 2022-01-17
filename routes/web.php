@@ -13,8 +13,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::get('/{any}', function () {
-//    return view('app');
-//})->name('home');
 
-Route::get('/{any}', 'App\Http\Controllers\PagesController@index')->where('any', '.*');
+Route::get('/{any}', 'App\Http\Controllers\PageController@index')->where('any', '.*');
